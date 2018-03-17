@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
  *
  */
 public class Client {
-	
+
 	// static variables
 	private final static int INCOMING_CONNECTION_PORT = 1337;
 	private final static String SERVER_NAME = "Server";
@@ -33,7 +33,7 @@ public class Client {
 	private Scanner input;
 	private volatile boolean isConfirming;
 	private volatile boolean enteringInput;
-	
+
 	/***
 	 * The constructor of the Client Class. Initializes a new Client and establishes a Connection to the Server
 	 * @see ReentrantReadWriteLock
@@ -50,10 +50,10 @@ public class Client {
 		input = new Scanner(System.in);
 		String serverIP = input.nextLine();
 		this.setupConnectToServer(serverIP);
-		inputUserCredentials();	
-		
+		inputUserCredentials();
+
 		}
-	
+
 	/***
 	 * A method use to get the Client's user name which is unique to themselves.
 	 * @return The String of the Client's user name
@@ -61,7 +61,7 @@ public class Client {
 	public String getUsername() {
 		return this.username;
 		}
-	
+
 	/***
 	 * A method used to get the Thread Managing the Client's interactions with the Server.
 	 * @return A ServerInteractionHandler used to manage the Client's interactions with the Server.
@@ -90,7 +90,7 @@ public class Client {
 		}
 		return size;
 		}
-	
+
 	/***
 	 * A method used print out the names of all Online Clients.
 	 * @return A String of the Names of all Online Clients seperated by newline characters.
@@ -111,7 +111,7 @@ public class Client {
 		}
 		return temp;
 		}
-	
+
 	/***
 	 * A method used to update the List of Online Clients' Names.
 	 * @param onlineClientNames An ArrayList of the current Online Clients' Names.
@@ -139,7 +139,7 @@ public class Client {
 	public Scanner getInput() {
 		return this.input;
 		}
-	
+
 	/***
 	 * A method used to check if a Client with the given user name is online.
 	 * @param onlineClientName The user name of the given Client.
@@ -164,7 +164,7 @@ public class Client {
 		}
 		return contains;
 		}
-	
+
 	/***
 	 * A method used by the Client to establish a Connections to the Server via a Socket
 	 * It catches an IOException if an error occurs.
@@ -185,7 +185,7 @@ public class Client {
 			}
 
 		}
-	
+
 
 
 	/***
@@ -202,9 +202,9 @@ public class Client {
 			System.out.println("Please enter a Password:");
 			this.password = input.nextLine();
 			} while(!checkCredentials());
-		
+
 		}
-	
+
 	/***
 	 * A method used to sent a Client's Login Details to the Server to see if they are correct.
 	 * @return A boolean indicating whether the Client's Login Details were accepted.
@@ -224,7 +224,7 @@ public class Client {
 				+ "\n*********************************************************************");
 		return false;
 		}
-	
+
 	/***
 	 * A method used to run the Client's ServerInteractionHandler in a new Thread.
 	 * @see Thread
@@ -232,8 +232,8 @@ public class Client {
 	 */
 	public void startServerInteractionHandler() {
 		new Thread(this.serverConnectionHandler).start();
-		}	
-	
+		}
+
 	/***
 	 * A method used to get the value of isConfirming.
 	 * @return a boolean with the value of isConfirming.
@@ -241,17 +241,17 @@ public class Client {
 	public boolean getIsConfirming() {
 		return this.isConfirming;
 		}
-	
+
 	/***
 	 * A method used to set the value of isConfirming.
 	 * @param isConfirming A boolean with the new value of isConfirming.
 	 */
 	public void setIsConfirming(boolean isConfirming) {
 		while(enteringInput);
-			
+
 		this.isConfirming = isConfirming;
 		}
-	
+
 	/***
 	 * A method used to get the value of enteringInput.
 	 * @return A boolean with the value of enteringInput.
@@ -259,23 +259,23 @@ public class Client {
 	public boolean getEnteringInput() {
 		return this.enteringInput;
 		}
-	
+
 	/***
 	 * A method used to set the value of enteringInput.
 	 * @param enteringInput A boolean with the new value of enteringInput.
 	 */
 	public void setEnteringInput(boolean enteringInput) {
 		while(isConfirming);
-		
+
 		this.enteringInput = enteringInput;
 		}
-	
+
 	/***
 	 * The main method of the Client Class.
 	 * @param args A String Array containing command-line arguments.
 	 */
 	public static void main(String args[]) {
-		
+
 		// starts a new Client
 		Client thisClient = new Client();
 		// starts ServerInteractionHandler in new Thread
@@ -293,6 +293,7 @@ public class Client {
 					   "2. Send Image Message to Another Client\n" +
 					   "3. Send Text Message to All Online Clients\n" +
 					   "4. Send Image Message to All Online Clients\n" +
+						 "5. Send Audio file to Another Client"+
 					   "Exit. Logout");
 			choice = input.nextLine();
 			switch(choice) {
@@ -301,7 +302,7 @@ public class Client {
 					thisClient.setEnteringInput(false);
 					thisClient.getServerInteractionHandler().updateOnlineClients();
 					while(!thisClient.getServerInteractionHandler().getUpdated());
-					
+
 					// update the online client list
 					thisClient.getServerInteractionHandler().setUpdated(false);
 					thisClient.setEnteringInput(true);
@@ -336,7 +337,7 @@ public class Client {
 					thisClient.setEnteringInput(false);
 					thisClient.getServerInteractionHandler().updateOnlineClients();
 					while(!thisClient.getServerInteractionHandler().getUpdated());
-						
+
 					// update the online client list
 					thisClient.getServerInteractionHandler().setUpdated(false);
 					thisClient.setEnteringInput(true);
@@ -395,7 +396,7 @@ public class Client {
 					Message output = new Message(MessageID.TEXT_SEND_TO_ALL_REQUEST, thisClient.getUsername(),
 								"All", message);
 					thisClient.getServerInteractionHandler().sendMessageToServer(output);
-						
+
 					break;
 					}
 				// send image message to all client
@@ -428,7 +429,7 @@ public class Client {
 						Message output = new Message(MessageID.IMAGE_SEND_TO_ALL_REQUEST, thisClient.getUsername(),
 								"All", (Object)image);
 						thisClient.getServerInteractionHandler().sendMessageToServer(output);
-					
+
 					break;
 					}
 				// exit
@@ -449,23 +450,23 @@ public class Client {
 					break;
 					}
 				}
-			
-			
-			
+
+
+
 			}
 		}
-		
-		
-	
-//*****************************************************************************************************************	
-	
+
+
+
+//*****************************************************************************************************************
+
 private class ServerInteractionHandler implements Runnable {
 	// instance variables
 	private Socket connectionToServer;
 	private ObjectInputStream oInputStream;
 	private ObjectOutputStream oOutputStream;
 	private volatile boolean updated;
-	
+
 	/***
 	 * The constructor of the ServerInteractionHandler class.
 	 * @param connectionToServer The Socket connection the Client to the Server
@@ -483,7 +484,7 @@ private class ServerInteractionHandler implements Runnable {
 			System.out.println(e);
 			}
 		}
-	
+
 	/***
 	 * A method to set the value of updated.
 	 * @param updated The new boolean value of updated.
@@ -491,7 +492,7 @@ private class ServerInteractionHandler implements Runnable {
 	public void setUpdated(boolean updated) {
 		this.updated = updated;
 		}
-	
+
 	/***
 	 * A method to get the value of updated.
 	 * @return The boolean value of updated.
@@ -499,7 +500,7 @@ private class ServerInteractionHandler implements Runnable {
 	public boolean getUpdated() {
 		return this.updated;
 		}
-	
+
 	/***
 	 * A method used to send a message to the Server.
 	 * Catches an IOException if an error occurs.
@@ -521,7 +522,7 @@ private class ServerInteractionHandler implements Runnable {
 			System.out.println(e);
 			}
 		}
-	
+
 	/***
 	 * A method used to receive a message from the Server.
 	 * Catches IOException and ClassNotFoundException if an error occurs.
@@ -539,14 +540,14 @@ private class ServerInteractionHandler implements Runnable {
 			String destinationName = this.oInputStream.readUTF();
 			Object data = this.oInputStream.readUnshared();
 			message = new Message(messageID, sourceName, destinationName, data);
-			
+
 			}
 		catch (IOException | ClassNotFoundException e) {
 			System.out.println(e);
 			}
 		return message;
 		}
-	
+
 	/***
 	 * A method used to send a request to the Server to retrieve All Online Client's user names.
 	 * @see Message
@@ -557,7 +558,7 @@ private class ServerInteractionHandler implements Runnable {
 				"update");
 		this.sendMessageToServer(output);
 		}
-	
+
 	/***
 	 * A method used to close the Socket Connection to the Server.
 	 * Catches an IOException if an error occurs.
@@ -565,7 +566,7 @@ private class ServerInteractionHandler implements Runnable {
 	public void closeConnectionToServer() {
 		try {
 			this.connectionToServer.close();
-			} 
+			}
 		catch (IOException e) {
 			System.out.println(e);
 			}
@@ -621,12 +622,12 @@ private class ServerInteractionHandler implements Runnable {
 								}
 						}
 					}
-					
+
 					// sends the confirmation to the server
 					Message outMessage = new Message(MessageID.IMAGE_TRANSFER_CONFIRMATION_RESPONSE, getUsername(),
 													input.getSourceName(), retrieveImage);
 					this.sendMessageToServer(outMessage);
-					
+
 					break;
 					}
 				// receive an image message
@@ -667,26 +668,18 @@ private class ServerInteractionHandler implements Runnable {
 							+ "\n*********************************************************************");
 					break;
 					}
-			
+
 				}
 			}
-		
-		
+
+
 		}
-	
-	
-	
-	
+
+
+
+
 }
 
 
-	
+
 }
-	
-	
-	
-	
-
-	
-	
-
