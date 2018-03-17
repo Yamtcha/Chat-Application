@@ -293,7 +293,11 @@ public class Client {
 					   "2. Send Image Message to Another Client\n" +
 					   "3. Send Text Message to All Online Clients\n" +
 					   "4. Send Image Message to All Online Clients\n" +
-						 "5. Send Audio file to Another Client....."+
+<<<<<<< HEAD
+						 "5. Send Audio file to Another Client\n"+
+=======
+						 "5. Send Audio file to Another Client"+
+>>>>>>> developer
 					   "Exit. Logout");
 			choice = input.nextLine();
 			switch(choice) {
