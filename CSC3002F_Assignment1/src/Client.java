@@ -12,13 +12,7 @@ import java.util.Scanner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-/***
- * An implementation of a Client for a Client-Server Chat Application.
- * @author Pieter Janse van Rensburg(jnspie007@myuct.ac.za)
- * @version 05/04/2017
- * @since 29/03/2017
- *
- */
+
 public class Client {
 	
 	// static variables
@@ -34,13 +28,9 @@ public class Client {
 	private volatile boolean isConfirming;
 	private volatile boolean enteringInput;
 	
-	/***
-	 * The constructor of the Client Class. Initializes a new Client and establishes a Connection to the Server
-	 * @see ReentrantReadWriteLock
-	 * @see ArrayList
-	 * @see Client#setupConnectToServer(String)
-	 * @see Client#inputUserCredentials()
-	 */
+	
+	//The constructor of the Client Class. Initializes a new Client and establishes a Connection to the Server
+	 
 	public Client() {
 		this.onlineClientNamesLock = new ReentrantReadWriteLock();
 		this.onlineClientNames = new ArrayList<String>();
@@ -53,30 +43,15 @@ public class Client {
 		inputUserCredentials();	
 		
 		}
-	
-	/***
-	 * A method use to get the Client's user name which is unique to themselves.
-	 * @return The String of the Client's user name
-	 */
+	 // A method use to get the Client's user name which is unique to themselves.
 	public String getUsername() {
 		return this.username;
 		}
-	
-	/***
-	 * A method used to get the Thread Managing the Client's interactions with the Server.
-	 * @return A ServerInteractionHandler used to manage the Client's interactions with the Server.
-	 * @see ServerInteractionHandler
-	 */
+	//A method used to get the Thread Managing the Client's interactions with the Server.
 	public ServerInteractionHandler getServerInteractionHandler() {
 		return this.serverConnectionHandler;
 		}
-
-	/***
-	 * A method used to get the number of names in the Online Client Names ArrayList.
-	 * @return An integer indicating the number of names in the Online Client Names ArrayList. Returns -1 if an error occurs.
-	 * @see ReentrantReadWriteLock
-	 * @see ArrayList
-	 */
+	//A method used to get the number of names in the Online Client Names ArrayList.
 	public int getOnlineClientNamesSize() {
 		int size = -1;
 		try{
@@ -90,52 +65,30 @@ public class Client {
 		}
 		return size;
 		}
-	
-	/***
-	 * A method used print out the names of all Online Clients.
-	 * @return A String of the Names of all Online Clients seperated by newline characters.
-	 * @see ReentrantReadWriteLock
-	 * @see ArrayList
-	 */
+	//A method used print out the names of all Online Clients.
 	public String getOnlineClientNamesToString() {
 		String temp = "";
 		try {
-			// lock the onlineClientNames Array since we are reading from it.
 			this.onlineClientNamesLock.readLock().lock();
 			for(String s: this.onlineClientNames)
 				temp += s + "\n";
 		}
 		finally {
-			// release the lock
 			this.onlineClientNamesLock.readLock().unlock();
 		}
 		return temp;
 		}
-	
-	/***
-	 * A method used to update the List of Online Clients' Names.
-	 * @param onlineClientNames An ArrayList of the current Online Clients' Names.
-	 * @see ReentrantReadWriteLock
-	 * @see ArrayList
-	 */
+	// A method used to update the List of Online Clients' Names.
 	public void setOnlineClientNames(ArrayList<String> onlineClientNames) {
 		try {
-			// lock online client names since we are writing to the ArrayList
 			this.onlineClientNamesLock.writeLock().lock();
 			this.onlineClientNames = onlineClientNames;
 		}
 		finally {
-			// release the lock
 			this.onlineClientNamesLock.writeLock().unlock();
 			}
 		}
-
-	/***
-	 * A method used to get the Scanner reading System.in
-	 * @return A Scanner Object used to read from System.in
-	 * @see Scanner
-	 * @see System#in
-	 */
+	//A method used to get the Scanner reading System.in
 	public Scanner getInput() {
 		return this.input;
 		}
