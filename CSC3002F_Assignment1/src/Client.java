@@ -432,6 +432,62 @@ public class Client {
 
 					break;
 					}
+
+					case "5":
+					{
+						try
+						{
+							thisClient.setEnteringInput(false);
+							thisClient.getServerInteractionHandler().updateOnlineClients();
+							while(!thisClient.getServerInteractionHandler().getUpdated());
+
+							// update the online client list
+							thisClient.getServerInteractionHandler().setUpdated(false);
+							thisClient.setEnteringInput(true);
+							System.out.println("Currently Online Clients(" + thisClient.getOnlineClientNamesSize() + ") :\n"
+									+ "-----------------------------------------\n" +
+									thisClient.getOnlineClientNamesToString() +
+				 "-------------------------------------------\nPlease Enter a Client's name to Send the Audio to.");
+							// get client user name to send message to
+							String receivingClient = input.nextLine();
+							thisClient.setEnteringInput(false);
+							// check if they are online
+							if(thisClient.containsOnlineClientName(receivingClient)) {
+								boolean loaded = false;
+								Media_Player audio_player = null;
+								String displayM = "Please enter the Location of the Audio File to Send";
+								// load audio file to the Media_Player Object
+								while(!loaded) {
+									try {
+										thisClient.setEnteringInput(true);
+										System.out.println(displayM);
+										String filePath = input.nextLine();
+										thisClient.setEnteringInput(false);
+										audio_player = new Media_Player(filePath);
+										loaded = true;
+										}
+										catch (IOException e) {
+										System.out.println("The Specified Audio could not be loaded." + e);
+										displayM = "Please re-enter the Location of the Image File to Send";
+								}
+									}
+								// send message to server
+								Message output = new Message(MessageID.AUDIO_TRANSFER_REQUEST, thisClient.getUsername(),
+										receivingClient, (Object)audio_player);
+								thisClient.getServerInteractionHandler().sendMessageToServer(output);
+								}
+							else {
+								System.out.println("*********************************************************************\n"
+										+ "System Notice - The Client whose name has been entered is not online. Going Back to Main Menu."
+										+ "\n*********************************************************************");
+								}
+							break;
+						}catch(Exception error)
+						{
+							System.out.println(error);
+						}
+						break;
+					}
 				// exit
 				case "Exit" : {
 					thisClient.setEnteringInput(false);
@@ -630,6 +686,51 @@ private class ServerInteractionHandler implements Runnable {
 
 					break;
 					}
+
+					// received an image message confirmation for this client
+					case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
+						String display = input.getData().toString();
+						Scanner in = getInput();
+						String choice = "";
+						boolean retrieveAudio = false;
+						// asks the user if they want to download the image
+						while(!(choice.equals("Yes") || choice.equals("No"))){
+							// inform the user we are waiting for System.in to be free
+							System.out.println("*********************************************************************\n"
+											+ "System Notice : Waiting for Previous Input to Finish on System.in"
+											+ "\n*********************************************************************");
+							setIsConfirming(true);
+							System.out.println(display);
+							choice = in.nextLine();
+							switch(choice) {
+								// they want to get the audio file
+								case "Yes": {
+									setIsConfirming(false);
+									retrieveAudio = true;
+									break;
+									}
+								// they dont want to get the audio file
+								case "No": {
+									setIsConfirming(false);
+									retrieveAudio = false;
+									break;
+									}
+								// ask them to enter their option again
+								default : {
+									display = "Invalid Option, Please enter Yes or No";
+									break;
+									}
+							}
+						}
+
+						// sends the confirmation to the server
+						Message outMessage = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_RESPONSE, getUsername(),
+														input.getSourceName(), retrieveAudio);
+						this.sendMessageToServer(outMessage);
+
+						break;
+						}
+
 				// receive an image message
 				case IMAGE_TRANSFER_RECEIPT : {
 					System.out.println("*********************************************************************\n" +
@@ -640,6 +741,24 @@ private class ServerInteractionHandler implements Runnable {
 					new Thread(new ClientImageDisplayer((ImageIcon)input.getData())).start();
 					break;
 					}
+
+					//Receive audio file from a client
+					case AUDIO_TRANSFER_RECEIPT : {
+						System.out.println("*********************************************************************\n" +
+											"System Notice : " + input.getSourceName() +
+											" sent you an audio playing now." +
+											"\n*********************************************************************");
+						// Play the audio file
+						Media_Player player = (Media_Player)input.getData();
+						try
+						{
+							player.play_audio();
+						}catch(Exception error)
+						{
+							System.out.println("Could not play sound due to :\n"+error);
+						}
+						break;
+						}
 				// receive a text message send to everyone
 				case TEXT_SEND_TO_ALL_RECEIPT: {
 					System.out.println("---------------------------------------------\nText Message from " +
