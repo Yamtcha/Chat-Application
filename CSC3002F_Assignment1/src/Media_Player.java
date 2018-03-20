@@ -21,7 +21,6 @@ public class Media_Player {
   public Media_Player(String filePath) throws IOException {
     get_input_file = new FileInputStream(filePath);
   }
-
   public void play_audio() throws IOException {
     try {
       AudioPlayer.player.start(new AudioStream(get_input_file));
@@ -30,7 +29,6 @@ public class Media_Player {
       System.out.println(e);
     }
   }
-
   public static void main(String[] args) {
     try {
       Media_Player m = new Media_Player("");
