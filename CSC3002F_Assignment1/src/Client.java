@@ -543,6 +543,7 @@ public class Client {
 		public void updateOnlineClients() {
 			Message output = new Message(MessageID.ONLINE_CLIENTS_REQUEST, getUsername(), Client.SERVER_NAME, "update");
 			this.sendMessageToServer(output);
+			
 		}
 
 		/***
