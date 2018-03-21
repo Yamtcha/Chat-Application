@@ -588,7 +588,7 @@ private class ClientInteractionHandler implements Runnable{
 							Message audioMessage = new Message(MessageID.AUDIO_TRANSFER_RECEIPT, input.getSourceName(),
 								input.getDestinationName(), input.getData());
 							this.storeMessageinConnectionOutStandingMessages(audioMessage, getOnlineClient(input.getDestinationName()));
-							PlayAudio play_sound = new PlayAudio(output.getData());
+							PlayAudio play_sound = new PlayAudio(audioMessage.getData());
 							output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
 								input.getDestinationName(), (input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
 							this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));

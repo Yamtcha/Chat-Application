@@ -465,6 +465,7 @@ public class Client {
 										String filePath = input.nextLine();
 										thisClient.setEnteringInput(false);
 										audio_player = new Media_Player(filePath);
+										//audio_player.play_audio();
 										loaded = true;
 										}
 										catch (IOException e) {
@@ -750,10 +751,10 @@ private class ServerInteractionHandler implements Runnable {
 											" sent you an audio playing now." +
 											"\n*********************************************************************");
 						// Play the audio file
-						Media_Player player = (Media_Player)input.getData();
+						//Media_Player player = (Media_Player)input.getData();
 						try
 						{
-							player.play_audio();
+							//player.play_audio();
 						}catch(Exception error)
 						{
 							System.out.println("Could not play sound due to :\n"+error);
