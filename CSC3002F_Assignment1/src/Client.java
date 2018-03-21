@@ -420,8 +420,87 @@ public class Client {
 								+ "\n*********************************************************************");
 					}
 					break;
+<<<<<<< HEAD
 				} catch (Exception error) {
 					System.out.println(error);
+=======
+					}
+
+					//send audio to another client
+					case "5":
+					{
+						try
+						{
+							thisClient.setEnteringInput(false);
+							thisClient.getServerInteractionHandler().updateOnlineClients();
+							while(!thisClient.getServerInteractionHandler().getUpdated());
+
+							// update the online client list
+							thisClient.getServerInteractionHandler().setUpdated(false);
+							thisClient.setEnteringInput(true);
+							System.out.println("Currently Online Clients(" + thisClient.getOnlineClientNamesSize() + ") :\n"
+									+ "-----------------------------------------\n" +
+									thisClient.getOnlineClientNamesToString() +
+				 "-------------------------------------------\nPlease Enter a Client's name to Send the Audio to.");
+							// get client user name to send message to
+							String receivingClient = input.nextLine();
+							thisClient.setEnteringInput(false);
+							// check if they are online
+							if(thisClient.containsOnlineClientName(receivingClient)) {
+								boolean loaded = false;
+								Media_Player audio_player = null;
+								String displayM = "Please enter the Location of the Audio File to Send";
+								// load audio file to the Media_Player Object
+								while(!loaded) {
+									try {
+										thisClient.setEnteringInput(true);
+										System.out.println(displayM);
+										String filePath = input.nextLine();
+										thisClient.setEnteringInput(false);
+										audio_player = new Media_Player(filePath);
+										//audio_player.play_audio();
+										loaded = true;
+										}
+										catch (IOException e) {
+										System.out.println("The Specified Audio could not be loaded." + e);
+										displayM = "Please re-enter the Location of the Image File to Send";
+								}
+									}
+								// send message to server
+								Message output = new Message(MessageID.AUDIO_TRANSFER_REQUEST, thisClient.getUsername(),
+										receivingClient, (Object)audio_player);
+								thisClient.getServerInteractionHandler().sendMessageToServer(output);
+								}
+							else {
+								System.out.println("*********************************************************************\n"
+										+ "System Notice - The Client whose name has been entered is not online. Going Back to Main Menu."
+										+ "\n*********************************************************************");
+								}
+							break;
+						}catch(Exception error)
+						{
+							System.out.println(error);
+						}
+						break;
+					}
+				// exit
+				case "Exit" : {
+					thisClient.setEnteringInput(false);
+					try {
+						// tell the server that the connection is closing
+						thisClient.getServerInteractionHandler().sendMessageToServer(new Message(MessageID.CLOSE_CONNECTION,
+								thisClient.getUsername(), Client.SERVER_NAME, ""));
+					}
+					catch (Exception e) {
+						System.out.println(e);
+						}
+					return;
+					}
+				default : {
+					System.out.println("Sorry the input was not understood. Please enter your choice again. (1,2,3,Exit)");
+					break;
+					}
+>>>>>>> developer
 				}
 				break;
 			}
@@ -652,6 +731,7 @@ public class Client {
 					break;
 				}
 
+<<<<<<< HEAD
 				//Receive audio file from a client
 				case AUDIO_TRANSFER_RECEIPT: {
 					System.out.println("*********************************************************************\n"
@@ -666,6 +746,25 @@ public class Client {
 					}
 					break;
 				}
+=======
+					//Receive audio file from a client
+					case AUDIO_TRANSFER_RECEIPT : {
+						System.out.println("*********************************************************************\n" +
+											"System Notice : " + input.getSourceName() +
+											" sent you an audio playing now." +
+											"\n*********************************************************************");
+						// Play the audio file
+						//Media_Player player = (Media_Player)input.getData();
+						try
+						{
+							//player.play_audio();
+						}catch(Exception error)
+						{
+							System.out.println("Could not play sound due to :\n"+error);
+						}
+						break;
+						}
+>>>>>>> developer
 				// receive a text message send to everyone
 				case TEXT_SEND_TO_ALL_RECEIPT: {
 					System.out.println("---------------------------------------------\nText Message from "

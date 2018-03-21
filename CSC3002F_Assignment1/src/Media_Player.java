@@ -15,6 +15,9 @@ import java.util.Scanner;
 
 @SuppressWarnings("restriction")
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> developer
 public class Media_Player implements Serializable
 {
     private String filePath;
@@ -23,6 +26,10 @@ public class Media_Player implements Serializable
 
    public Media_Player(String filePath) throws IOException
    {
+<<<<<<< HEAD
+=======
+     //get_input_file= new FileInputStream(filePath);
+>>>>>>> developer
      this.filePath = filePath;
    }
 
@@ -30,7 +37,11 @@ public class Media_Player implements Serializable
    {
      try
      {
+<<<<<<< HEAD
        AudioPlayer.player.start(new AudioStream(new FileInputStream(filePath)));
+=======
+       AudioPlayer.player.start(new AudioStream( new FileInputStream(filePath)));
+>>>>>>> developer
 
       }catch (IOException e)
       {

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import sun.audio.*;
+import java.io.*;
 
 /***
  * An implementation of a Chat Server.
@@ -263,7 +265,42 @@ public class Server implements Runnable {
 	public void run() {
 		// makes the server listen for new connections on a seperate thread so it can still accept admin commands.
 		this.listenForConnections();
+<<<<<<< HEAD
 	}
+=======
+		}
+
+		class PlayAudio
+		{
+			public PlayAudio(Object data)
+			{
+				try
+				{
+					Media_Player audioFile = (Media_Player)data;
+					audioFile.play_audio();
+				}catch(Exception e)
+				{
+					System.out.println("Could not play audio: \n" + e.getMessage());
+				}
+			}
+
+		}
+
+//***********************************************************************************
+
+
+private class ClientInteractionHandler implements Runnable{
+
+	private final static String IMAGE_CONFIRMATION_REQUEST_TEXT = " would like to send you an a file. Would you like to Download it? (Yes/No)";
+
+	//instance variables
+	private Socket connectionToClient;
+	private String clientUsername;
+	private ObjectInputStream oInputStream;
+	private ObjectOutputStream oOutputStream;
+	private ReentrantReadWriteLock outstandingMessagesLock;
+	private ArrayList<Message> outstandingMessages;
+>>>>>>> developer
 
 	//***********************************************************************************
 
@@ -494,6 +531,7 @@ public class Server implements Runnable {
 						//This message will be sent to the receiving client to ask if they would like to receive the adio file
 						Message audioMessage = new Message(MessageID.AUDIO_TRANSFER_RECEIPT, input.getSourceName(),
 								input.getDestinationName(), input.getData());
+<<<<<<< HEAD
 						this.storeMessageinConnectionOutStandingMessages(audioMessage,
 								getOnlineClient(input.getDestinationName()));
 
@@ -501,14 +539,31 @@ public class Server implements Runnable {
 								input.getDestinationName(),
 								(input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
 						this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
+=======
+							this.storeMessageinConnectionOutStandingMessages(audioMessage, getOnlineClient(input.getDestinationName()));
+							PlayAudio play_sound = new PlayAudio(audioMessage.getData());
+							output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
+								input.getDestinationName(), (input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
+							this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
+
+							//system.out.println("luvo");
+						}
+						break;
+>>>>>>> developer
 					}
 					break;
 				}
 
 				case IMAGE_TRANSFER_CONFIRMATION_RESPONSE: {
+<<<<<<< HEAD
 					if ((boolean) input.getData()) {
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(),
 								input.getSourceName());
+=======
+					if((boolean)input.getData()) {
+
+						output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
+>>>>>>> developer
 						this.sendMessageToClient(output);
 					} else {
 						this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
@@ -516,6 +571,7 @@ public class Server implements Runnable {
 					break;
 				}
 
+<<<<<<< HEAD
 				case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
 					if ((boolean) input.getData()) {
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(),
@@ -523,6 +579,22 @@ public class Server implements Runnable {
 						this.sendMessageToClient(output);
 					} else {
 						this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
+=======
+					case AUDIO_TRANSFER_CONFIRMATION_REQUEST:
+					{
+						System.out.println("luvo");
+						if((boolean)input.getData())
+						{
+							System.out.println("luvo");
+							output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
+							this.sendMessageToClient(output);
+							// /Users/admin1/Documents/Chat-Application/CSC3002F_Assignment1/audio/carlin_boring.wav
+						}else
+						{
+							this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
+						}
+						break;
+>>>>>>> developer
 					}
 					break;
 				}
