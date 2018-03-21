@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import sun.audio.*;
+import java.io.*;
 
 /***
  * An implementation of a Chat Server.
@@ -319,15 +321,26 @@ public class Server implements Runnable {
 		this.listenForConnections();
 		}
 
+		class PlayAudio
+		{
+			public PlayAudio(Object data)
+			{
+				try
+				{
+					Media_Player audioFile = (Media_Player)data;
+					audioFile.play_audio();
+				}catch(Exception e)
+				{
+					System.out.println("Could not play audio: \n" + e.getMessage());
+				}
+			}
 
-
-
-
+		}
 
 //***********************************************************************************
 
 
-private class ClientInteractionHandler implements Runnable {
+private class ClientInteractionHandler implements Runnable{
 
 	private final static String IMAGE_CONFIRMATION_REQUEST_TEXT = " would like to send you an a file. Would you like to Download it? (Yes/No)";
 
@@ -575,16 +588,19 @@ private class ClientInteractionHandler implements Runnable {
 							Message audioMessage = new Message(MessageID.AUDIO_TRANSFER_RECEIPT, input.getSourceName(),
 								input.getDestinationName(), input.getData());
 							this.storeMessageinConnectionOutStandingMessages(audioMessage, getOnlineClient(input.getDestinationName()));
-
+							PlayAudio play_sound = new PlayAudio(output.getData());
 							output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
 								input.getDestinationName(), (input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
 							this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
+
+							//system.out.println("luvo");
 						}
 						break;
 					}
 
 				case IMAGE_TRANSFER_CONFIRMATION_RESPONSE: {
 					if((boolean)input.getData()) {
+
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
 						this.sendMessageToClient(output);
 						}
@@ -596,10 +612,13 @@ private class ClientInteractionHandler implements Runnable {
 
 					case AUDIO_TRANSFER_CONFIRMATION_REQUEST:
 					{
+						System.out.println("luvo");
 						if((boolean)input.getData())
 						{
+							System.out.println("luvo");
 							output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
 							this.sendMessageToClient(output);
+							// /Users/admin1/Documents/Chat-Application/CSC3002F_Assignment1/audio/carlin_boring.wav
 						}else
 						{
 							this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
