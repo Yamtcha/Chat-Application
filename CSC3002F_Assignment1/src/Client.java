@@ -11,6 +11,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+/***
+ * An implementation of a Client for a Client-Server Chat Application.
+ */
 public class Client {
 
 	// static variables
@@ -43,6 +46,7 @@ public class Client {
 	}
 
 	/***
+	 * A method use to get the Client's user name which is unique to themselves.
 	 */
 	public String getUsername() {
 		return this.username;
@@ -55,7 +59,9 @@ public class Client {
 		return this.serverConnectionHandler;
 	}
 
-	/**A method used to get the number of names in the Online Client Names ArrayList.*/
+	/***
+	 * A method used to get the number of names in the Online Client Names ArrayList.
+	 */
 	public int getOnlineClientNamesSize() {
 		int size = -1;
 		try {
@@ -75,10 +81,12 @@ public class Client {
 	public String getOnlineClientNamesToString() {
 		String temp = "";
 		try {
+			// lock the onlineClientNames Array since we are reading from it.
 			this.onlineClientNamesLock.readLock().lock();
 			for (String s : this.onlineClientNames)
 				temp += s + "\n";
 		} finally {
+			// release the lock
 			this.onlineClientNamesLock.readLock().unlock();
 		}
 		return temp;
@@ -89,21 +97,24 @@ public class Client {
 	 */
 	public void setOnlineClientNames(ArrayList<String> onlineClientNames) {
 		try {
+			// lock online client names since we are writing to the ArrayList
 			this.onlineClientNamesLock.writeLock().lock();
 			this.onlineClientNames = onlineClientNames;
 		} finally {
+			// release the lock
 			this.onlineClientNamesLock.writeLock().unlock();
 		}
 	}
 
-	/**A method used to get the Scanner reading System.in*/
+	/***
+	 * A method used to get the Scanner reading System.in
+	 */
 	public Scanner getInput() {
 		return this.input;
 	}
 
 	/***
 	 * A method used to check if a Client with the given user name is online.
-	 * @param onlineClientName The user name of the given Client.
 	 */
 	public boolean containsOnlineClientName(String onlineClientName) {
 		boolean contains = false;
@@ -124,7 +135,6 @@ public class Client {
 
 	/***
 	 * A method used by the Client to establish a Connections to the Server via a Socket
-	 * It catches an IOException if an error occurs.
 	 */
 	private void setupConnectToServer(String serverIP) {
 		try {
@@ -141,7 +151,8 @@ public class Client {
 
 	/***
 	 * A method used to ask the Client to enter their login credentials and to check if they are correct.
-	  */
+	 * @see Client#checkCredentials()
+	 */
 	private void inputUserCredentials() {
 		this.username = "";
 		this.password = "";
@@ -157,7 +168,8 @@ public class Client {
 
 	/***
 	 * A method used to sent a Client's Login Details to the Server to see if they are correct.
-	  */
+	 * @return A boolean indicating whether the Client's Login Details were accepted.
+	 */
 	private boolean checkCredentials() {
 		// formulates message to send to server
 		Message output = new Message(MessageID.REGISTRATION_REQUEST, this.username, Client.SERVER_NAME, this.password);
@@ -176,13 +188,14 @@ public class Client {
 
 	/***
 	 * A method used to run the Client's ServerInteractionHandler in a new Thread.
-	*/
+	 */
 	public void startServerInteractionHandler() {
 		new Thread(this.serverConnectionHandler).start();
 	}
 
 	/***
 	 * A method used to get the value of isConfirming.
+	 * @return a boolean with the value of isConfirming.
 	 */
 	public boolean getIsConfirming() {
 		return this.isConfirming;
@@ -190,6 +203,7 @@ public class Client {
 
 	/***
 	 * A method used to set the value of isConfirming.
+	 * @param isConfirming A boolean with the new value of isConfirming.
 	 */
 	public void setIsConfirming(boolean isConfirming) {
 		while (enteringInput)
@@ -238,7 +252,7 @@ public class Client {
 			System.out.println("Please Enter a number or Exit corresponding to One of the Following Options\n"
 					+ "1. Send Text Message to Another Client\n" + "2. Send Image Message to Another Client\n"
 					+ "3. Send Text Message to All Online Clients\n" + "4. Send Image Message to All Online Clients\n"
-					+ "5. Send Audio file to Another Client\n" + "Exit. Logout");
+					+ "5. Send Audio file to Another Client........." + "Exit. Logout");
 			choice = input.nextLine();
 			switch (choice) {
 			// sending a text message to another client
@@ -375,6 +389,7 @@ public class Client {
 				break;
 			}
 
+			//send audio to another client
 			case "5": {
 				try {
 					thisClient.setEnteringInput(false);
@@ -404,6 +419,7 @@ public class Client {
 								String filePath = input.nextLine();
 								thisClient.setEnteringInput(false);
 								audio_player = new Media_Player(filePath);
+								//audio_player.play_audio();
 								loaded = true;
 							} catch (IOException e) {
 								System.out.println("The Specified Audio could not be loaded." + e);
@@ -420,87 +436,8 @@ public class Client {
 								+ "\n*********************************************************************");
 					}
 					break;
-<<<<<<< HEAD
 				} catch (Exception error) {
 					System.out.println(error);
-=======
-					}
-
-					//send audio to another client
-					case "5":
-					{
-						try
-						{
-							thisClient.setEnteringInput(false);
-							thisClient.getServerInteractionHandler().updateOnlineClients();
-							while(!thisClient.getServerInteractionHandler().getUpdated());
-
-							// update the online client list
-							thisClient.getServerInteractionHandler().setUpdated(false);
-							thisClient.setEnteringInput(true);
-							System.out.println("Currently Online Clients(" + thisClient.getOnlineClientNamesSize() + ") :\n"
-									+ "-----------------------------------------\n" +
-									thisClient.getOnlineClientNamesToString() +
-				 "-------------------------------------------\nPlease Enter a Client's name to Send the Audio to.");
-							// get client user name to send message to
-							String receivingClient = input.nextLine();
-							thisClient.setEnteringInput(false);
-							// check if they are online
-							if(thisClient.containsOnlineClientName(receivingClient)) {
-								boolean loaded = false;
-								Media_Player audio_player = null;
-								String displayM = "Please enter the Location of the Audio File to Send";
-								// load audio file to the Media_Player Object
-								while(!loaded) {
-									try {
-										thisClient.setEnteringInput(true);
-										System.out.println(displayM);
-										String filePath = input.nextLine();
-										thisClient.setEnteringInput(false);
-										audio_player = new Media_Player(filePath);
-										//audio_player.play_audio();
-										loaded = true;
-										}
-										catch (IOException e) {
-										System.out.println("The Specified Audio could not be loaded." + e);
-										displayM = "Please re-enter the Location of the Image File to Send";
-								}
-									}
-								// send message to server
-								Message output = new Message(MessageID.AUDIO_TRANSFER_REQUEST, thisClient.getUsername(),
-										receivingClient, (Object)audio_player);
-								thisClient.getServerInteractionHandler().sendMessageToServer(output);
-								}
-							else {
-								System.out.println("*********************************************************************\n"
-										+ "System Notice - The Client whose name has been entered is not online. Going Back to Main Menu."
-										+ "\n*********************************************************************");
-								}
-							break;
-						}catch(Exception error)
-						{
-							System.out.println(error);
-						}
-						break;
-					}
-				// exit
-				case "Exit" : {
-					thisClient.setEnteringInput(false);
-					try {
-						// tell the server that the connection is closing
-						thisClient.getServerInteractionHandler().sendMessageToServer(new Message(MessageID.CLOSE_CONNECTION,
-								thisClient.getUsername(), Client.SERVER_NAME, ""));
-					}
-					catch (Exception e) {
-						System.out.println(e);
-						}
-					return;
-					}
-				default : {
-					System.out.println("Sorry the input was not understood. Please enter your choice again. (1,2,3,Exit)");
-					break;
-					}
->>>>>>> developer
 				}
 				break;
 			}
@@ -525,7 +462,6 @@ public class Client {
 		}
 	}
 
-	//*****************************************************************************************************************
 	private class ServerInteractionHandler implements Runnable {
 		// instance variables
 		private Socket connectionToServer;
@@ -535,8 +471,6 @@ public class Client {
 
 		/***
 		 * The constructor of the ServerInteractionHandler class.
-		 * @param connectionToServer The Socket connection the Client to the Server
-		 * @see Socket
 		 */
 		public ServerInteractionHandler(Socket connectionToServer) {
 			this.connectionToServer = connectionToServer;
@@ -596,6 +530,7 @@ public class Client {
 				String destinationName = this.oInputStream.readUTF();
 				Object data = this.oInputStream.readUnshared();
 				message = new Message(messageID, sourceName, destinationName, data);
+
 			} catch (IOException | ClassNotFoundException e) {
 				System.out.println(e);
 			}
@@ -672,6 +607,7 @@ public class Client {
 						}
 						}
 					}
+
 					// sends the confirmation to the server
 					Message outMessage = new Message(MessageID.IMAGE_TRANSFER_CONFIRMATION_RESPONSE, getUsername(),
 							input.getSourceName(), retrieveImage);
@@ -679,6 +615,7 @@ public class Client {
 
 					break;
 				}
+
 				// received an image message confirmation for this client
 				case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
 					String display = input.getData().toString();
@@ -714,6 +651,7 @@ public class Client {
 						}
 						}
 					}
+
 					// sends the confirmation to the server
 					Message outMessage = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_RESPONSE, getUsername(),
 							input.getSourceName(), retrieveAudio);
@@ -721,6 +659,7 @@ public class Client {
 
 					break;
 				}
+
 				// receive an image message
 				case IMAGE_TRANSFER_RECEIPT: {
 					System.out.println("*********************************************************************\n"
@@ -731,40 +670,20 @@ public class Client {
 					break;
 				}
 
-<<<<<<< HEAD
 				//Receive audio file from a client
 				case AUDIO_TRANSFER_RECEIPT: {
 					System.out.println("*********************************************************************\n"
 							+ "System Notice : " + input.getSourceName() + " sent you an audio playing now."
 							+ "\n*********************************************************************");
 					// Play the audio file
-					Media_Player player = (Media_Player) input.getData();
+					//Media_Player player = (Media_Player)input.getData();
 					try {
-						player.play_audio();
+						//player.play_audio();
 					} catch (Exception error) {
 						System.out.println("Could not play sound due to :\n" + error);
 					}
 					break;
 				}
-=======
-					//Receive audio file from a client
-					case AUDIO_TRANSFER_RECEIPT : {
-						System.out.println("*********************************************************************\n" +
-											"System Notice : " + input.getSourceName() +
-											" sent you an audio playing now." +
-											"\n*********************************************************************");
-						// Play the audio file
-						//Media_Player player = (Media_Player)input.getData();
-						try
-						{
-							//player.play_audio();
-						}catch(Exception error)
-						{
-							System.out.println("Could not play sound due to :\n"+error);
-						}
-						break;
-						}
->>>>>>> developer
 				// receive a text message send to everyone
 				case TEXT_SEND_TO_ALL_RECEIPT: {
 					System.out.println("---------------------------------------------\nText Message from "
@@ -793,8 +712,11 @@ public class Client {
 							+ "\n*********************************************************************");
 					break;
 				}
+
 				}
 			}
+
 		}
+
 	}
 }

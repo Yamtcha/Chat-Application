@@ -102,6 +102,7 @@ public class Server implements Runnable {
 
 	/***
 	 * A method used to Shut Down the Server.
+	 * @see System#exit(int)
 	 */
 	private void shutdownServer() {
 		if (!this.currentConnections.isEmpty()) {
@@ -260,49 +261,26 @@ public class Server implements Runnable {
 
 	/***
 	 * The method which is called when Server is parsed into a Thread and start is called.
+	 * @see Thread
+	 * @see Runnable
 	 */
 	@Override
 	public void run() {
 		// makes the server listen for new connections on a seperate thread so it can still accept admin commands.
 		this.listenForConnections();
-<<<<<<< HEAD
 	}
-=======
-		}
 
-		class PlayAudio
-		{
-			public PlayAudio(Object data)
-			{
-				try
-				{
-					Media_Player audioFile = (Media_Player)data;
-					audioFile.play_audio();
-				}catch(Exception e)
-				{
-					System.out.println("Could not play audio: \n" + e.getMessage());
-				}
+	class PlayAudio {
+		public PlayAudio(Object data) {
+			try {
+				Media_Player audioFile = (Media_Player) data;
+				audioFile.play_audio();
+			} catch (Exception e) {
+				System.out.println("Could not play audio: \n" + e.getMessage());
 			}
-
 		}
 
-//***********************************************************************************
-
-
-private class ClientInteractionHandler implements Runnable{
-
-	private final static String IMAGE_CONFIRMATION_REQUEST_TEXT = " would like to send you an a file. Would you like to Download it? (Yes/No)";
-
-	//instance variables
-	private Socket connectionToClient;
-	private String clientUsername;
-	private ObjectInputStream oInputStream;
-	private ObjectOutputStream oOutputStream;
-	private ReentrantReadWriteLock outstandingMessagesLock;
-	private ArrayList<Message> outstandingMessages;
->>>>>>> developer
-
-	//***********************************************************************************
+	}
 
 	private class ClientInteractionHandler implements Runnable {
 
@@ -339,6 +317,7 @@ private class ClientInteractionHandler implements Runnable{
 
 		/***
 		 * A method used to get the user name of the Client who the ClientInteractionHandler is managing.
+		 * @return The user name of the Client who the ClientInteractionHandler is managing.
 		 */
 		public String getClientUsername() {
 			return this.clientUsername;
@@ -346,6 +325,7 @@ private class ClientInteractionHandler implements Runnable{
 
 		/***
 		 * A method to set the user name of the Client who the ClientInteractionHandler is managing.
+		 * @param username The user name of the Client who the ClientInteractionHandler is managing.
 		 */
 		public void setClientUsername(String username) {
 			this.clientUsername = username;
@@ -485,7 +465,6 @@ private class ClientInteractionHandler implements Runnable{
 			while (!this.connectionToClient.isClosed()) {
 
 				input = this.getMessageFromClient();
-
 				// based on the Message ID different actions have to be performed.
 				switch (input.getMessageID()) {
 
@@ -524,6 +503,7 @@ private class ClientInteractionHandler implements Runnable{
 						this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
 					}
 					break;
+
 				}
 
 				case AUDIO_TRANSFER_REQUEST: {
@@ -531,74 +511,42 @@ private class ClientInteractionHandler implements Runnable{
 						//This message will be sent to the receiving client to ask if they would like to receive the adio file
 						Message audioMessage = new Message(MessageID.AUDIO_TRANSFER_RECEIPT, input.getSourceName(),
 								input.getDestinationName(), input.getData());
-<<<<<<< HEAD
 						this.storeMessageinConnectionOutStandingMessages(audioMessage,
 								getOnlineClient(input.getDestinationName()));
-
+						PlayAudio play_sound = new PlayAudio(audioMessage.getData());
 						output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
 								input.getDestinationName(),
 								(input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
 						this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
-=======
-							this.storeMessageinConnectionOutStandingMessages(audioMessage, getOnlineClient(input.getDestinationName()));
-							PlayAudio play_sound = new PlayAudio(audioMessage.getData());
-							output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
-								input.getDestinationName(), (input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
-							this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
 
-							//system.out.println("luvo");
-						}
-						break;
->>>>>>> developer
+						//system.out.println("luvo");
 					}
 					break;
 				}
-
 				case IMAGE_TRANSFER_CONFIRMATION_RESPONSE: {
-<<<<<<< HEAD
 					if ((boolean) input.getData()) {
+
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(),
 								input.getSourceName());
-=======
-					if((boolean)input.getData()) {
-
-						output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
->>>>>>> developer
 						this.sendMessageToClient(output);
 					} else {
 						this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
 					}
 					break;
 				}
-
-<<<<<<< HEAD
 				case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
+					System.out.println("luvo");
 					if ((boolean) input.getData()) {
+						System.out.println("luvo");
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(),
 								input.getSourceName());
 						this.sendMessageToClient(output);
+						// /Users/admin1/Documents/Chat-Application/CSC3002F_Assignment1/audio/carlin_boring.wav
 					} else {
 						this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
-=======
-					case AUDIO_TRANSFER_CONFIRMATION_REQUEST:
-					{
-						System.out.println("luvo");
-						if((boolean)input.getData())
-						{
-							System.out.println("luvo");
-							output = this.getMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
-							this.sendMessageToClient(output);
-							// /Users/admin1/Documents/Chat-Application/CSC3002F_Assignment1/audio/carlin_boring.wav
-						}else
-						{
-							this.deleteMessageFromOutstandingMessages(input.getDestinationName(), input.getSourceName());
-						}
-						break;
->>>>>>> developer
 					}
 					break;
 				}
-
 				case TEXT_SEND_TO_ALL_REQUEST: {
 					for (ClientInteractionHandler client : currentConnections) {
 						if (!client.getClientUsername().equals(input.getSourceName())) {
@@ -644,7 +592,5 @@ private class ClientInteractionHandler implements Runnable{
 			}
 
 		}
-
 	}
-
 }
