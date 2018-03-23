@@ -1,3 +1,14 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author user
+ */
+
 import java.io.*;
 import sun.audio.*;
 //import java.util.Scanner;
@@ -14,6 +25,7 @@ public class Media_Player implements Serializable
      //get_input_file= new FileInputStream(filePath);
      this.filePath = filePath;
    }
+
    public void play_audio() throws IOException
    {
      try
@@ -25,6 +37,7 @@ public class Media_Player implements Serializable
           System.out.println(e);
       }
    }
+
    public static void main(String[] args) {
      try
      {
