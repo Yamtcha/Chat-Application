@@ -225,8 +225,7 @@ public class Client {
 	 * @param enteringInput A boolean with the new value of enteringInput.
 	 */
 	public void setEnteringInput(boolean enteringInput) {
-		while (isConfirming)
-			;
+		while (isConfirming);
 
 		this.enteringInput = enteringInput;
 	}
@@ -252,7 +251,7 @@ public class Client {
 			System.out.println("Please Enter a number or Exit corresponding to One of the Following Options\n"
 					+ "1. Send Text Message to Another Client\n" + "2. Send Image Message to Another Client\n"
 					+ "3. Send Text Message to All Online Clients\n" + "4. Send Image Message to All Online Clients\n"
-					+ "5. Send Audio file to Another Client........." + "Exit. Logout");
+					+ "5. Send Audio file to Another Client\n6. Refresh app\n" + "Exit. Logout");
 			choice = input.nextLine();
 			switch (choice) {
 			// sending a text message to another client
@@ -394,8 +393,7 @@ public class Client {
 				try {
 					thisClient.setEnteringInput(false);
 					thisClient.getServerInteractionHandler().updateOnlineClients();
-					while (!thisClient.getServerInteractionHandler().getUpdated())
-						;
+					while (!thisClient.getServerInteractionHandler().getUpdated());
 
 					// update the online client list
 					thisClient.getServerInteractionHandler().setUpdated(false);
@@ -435,10 +433,21 @@ public class Client {
 								+ "System Notice - The Client whose name has been entered is not online. Going Back to Main Menu."
 								+ "\n*********************************************************************");
 					}
-					break;
+					//break;
 				} catch (Exception error) {
 					System.out.println(error);
 				}
+				break;
+			}
+
+			case "6":
+			{
+				System.out.println("*****************************************************************\n");
+				System.out.println("Refreshed!\n**********************************************************\n");
+				thisClient.setEnteringInput(false);
+				thisClient.getServerInteractionHandler().updateOnlineClients();
+				//thisClient.setEnteringInput(true);
+
 				break;
 			}
 			// exit
@@ -543,7 +552,7 @@ public class Client {
 		public void updateOnlineClients() {
 			Message output = new Message(MessageID.ONLINE_CLIENTS_REQUEST, getUsername(), Client.SERVER_NAME, "update");
 			this.sendMessageToServer(output);
-			
+
 		}
 
 		/***
@@ -617,21 +626,22 @@ public class Client {
 					break;
 				}
 
-				// received an image message confirmation for this client
+				// received an audio file confirmation for this client
 				case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
 					String display = input.getData().toString();
 					Scanner in = getInput();
 					String choice = "";
 					boolean retrieveAudio = false;
-					// asks the user if they want to download the image
+					// asks the user if they want to download the audio file
 					while (!(choice.equals("Yes") || choice.equals("No"))) {
 						// inform the user we are waiting for System.in to be free
 						System.out.println("*********************************************************************\n"
 								+ "System Notice : Waiting for Previous Input to Finish on System.in"
 								+ "\n*********************************************************************");
-						setIsConfirming(true);
-						System.out.println(display);
-						choice = in.nextLine();
+							setIsConfirming(true);
+							System.out.println(display);
+							choice = in.nextLine();
+
 						switch (choice) {
 						// they want to get the audio file
 						case "Yes": {
@@ -677,9 +687,9 @@ public class Client {
 							+ "System Notice : " + input.getSourceName() + " sent you an audio playing now."
 							+ "\n*********************************************************************");
 					// Play the audio file
-					//Media_Player player = (Media_Player)input.getData();
+					Media_Player player = (Media_Player)input.getData();
 					try {
-						//player.play_audio();
+						player.play_audio();
 					} catch (Exception error) {
 						System.out.println("Could not play sound due to :\n" + error);
 					}

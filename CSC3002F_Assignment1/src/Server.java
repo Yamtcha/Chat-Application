@@ -22,7 +22,7 @@ public class Server implements Runnable {
 
 	private final static int INCOMING_CONNECTION_PORT = 1337;
 	private final static String SERVER_NAME = "Server";
-	private final static String USER_LOGIN_DETAILS = "server_data/user_details.txt";
+	private final static String USER_LOGIN_DETAILS = "./server_data/user_details.txt";
 
 	//instance variables
 	private ServerSocket serverSocket;
@@ -271,12 +271,26 @@ public class Server implements Runnable {
 	}
 
 	class PlayAudio {
-		public PlayAudio(Object data) {
-			try {
-				Media_Player audioFile = (Media_Player) data;
-				audioFile.play_audio();
+		private Media_Player audioFile;
+
+		public PlayAudio(Object data)
+		{
+			try
+			{
+				audioFile = (Media_Player) data;
 			} catch (Exception e) {
 				System.out.println("Could not play audio: \n" + e.getMessage());
+			}
+		}
+
+		public void play_audio()
+		{
+			try
+			{
+				audioFile.play_audio();
+			}catch(Exception e)
+			{
+				System.out.println("Audio inner class : \n" + e);
 			}
 		}
 
@@ -513,13 +527,12 @@ public class Server implements Runnable {
 								input.getDestinationName(), input.getData());
 						this.storeMessageinConnectionOutStandingMessages(audioMessage,
 								getOnlineClient(input.getDestinationName()));
-						PlayAudio play_sound = new PlayAudio(audioMessage.getData());
+						//PlayAudio play_sound = new PlayAudio(audioMessage.getData());
 						output = new Message(MessageID.AUDIO_TRANSFER_CONFIRMATION_REQUEST, input.getSourceName(),
 								input.getDestinationName(),
 								(input.getSourceName() + ClientInteractionHandler.IMAGE_CONFIRMATION_REQUEST_TEXT));
 						this.transferMessageToConnection(output, getOnlineClient(input.getDestinationName()));
 
-						//system.out.println("luvo");
 					}
 					break;
 				}
@@ -534,10 +547,8 @@ public class Server implements Runnable {
 					}
 					break;
 				}
-				case AUDIO_TRANSFER_CONFIRMATION_REQUEST: {
-					System.out.println("luvo");
+				case AUDIO_TRANSFER_CONFIRMATION_RESPONSE: {
 					if ((boolean) input.getData()) {
-						System.out.println("luvo");
 						output = this.getMessageFromOutstandingMessages(input.getDestinationName(),
 								input.getSourceName());
 						this.sendMessageToClient(output);
